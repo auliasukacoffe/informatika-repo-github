@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Informatika - Level Sulit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #9b59b6;
+            --light-color: rgba(255, 255, 255, 0.85);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --correct-color: #2ecc71;
+            --wrong-color: #e74c3c;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .frosted-glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 0;
+        }
+
+        header {
+            padding: 30px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 15px 25px;
+            flex: 1;
+            min-width: 180px;
+            text-align: center;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: var(--transition);
+        }
+
+        .info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+
+        .info-box h3 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-box p {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        #timer {
+            color: #e74c3c;
+        }
+
+        .question-container {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            transition: var(--transition);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.1);
+            padding: 8px 20px;
+            border-radius: 50px;
+        }
+
+        .question-difficulty {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #question-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid rgba(52, 152, 219, 0.2);
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(52, 152, 219, 0.05);
+            border-color: rgba(52, 152, 219, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+        }
+
+        .option.selected {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: var(--secondary-color);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .option.correct {
+            background: rgba(46, 204, 113, 0.15);
+            border-color: var(--correct-color);
+            color: var(--correct-color);
+        }
+
+        .option.wrong {
+            background: rgba(231, 76, 60, 0.1);
+            border-color: var(--wrong-color);
+            color: var(--wrong-color);
+        }
+
+        .option-letter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            flex-shrink: 0;
+        }
+
+        .option.correct .option-letter {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--correct-color);
+        }
+
+        .option.wrong .option-letter {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--wrong-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+
+        #submit-btn {
+            background: var(--secondary-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        #submit-btn:hover:not(:disabled) {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        #next-btn {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        #next-btn:hover:not(:disabled) {
+            background: #8e44ad;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+        }
+
+        #result-btn {
+            background: var(--correct-color);
+            color: white;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        #result-btn:hover:not(:disabled) {
+            background: #27ae60;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Efek glitch saat tombol diklik */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-effect {
+            animation: glitch 0.3s linear;
+        }
+
+        /* Halaman hasil */
+        .result-container {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            display: none;
+        }
+
+        .result-header {
+            margin-bottom: 30px;
+        }
+
+        .result-title {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .score-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin: 20px 0;
+            text-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .score-text {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .result-details {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 200px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+
+        .result-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .result-box p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .restart-btn {
+            background: var(--primary-color);
+            color: white;
+            margin: 20px auto;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+        }
+
+        .restart-btn:hover {
+            background: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Progress bar */
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--secondary-color);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Responsif */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .info-box {
+                min-width: 140px;
+                padding: 12px 15px;
+            }
+            
+            .btn {
+                min-width: 140px;
+                padding: 12px 20px;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .question-container {
+                padding: 20px;
+            }
+            
+            #question-text {
+                font-size: 1.2rem;
+            }
+            
+            .option {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .result-container {
+                padding: 25px;
+            }
+            
+            .score-display {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container frosted-glass">
+        <header>
+            <h1><i class="fas fa-laptop-code"></i> Kuis Informatika</h1>
+            <p class="subtitle">10 Soal Tingkat Sulit - Uji Pengetahuan Teknologi Anda</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="quiz-info">
+                <div class="info-box">
+                    <h3><i class="far fa-question-circle"></i> Soal</h3>
+                    <p id="current-question">1/10</p>
+                </div>
+                <div class="info-box">
+                    <h3><i class="far fa-clock"></i> Waktu</h3>
+                    <p id="timer">60</p>
+                </div>
+                <div class="info-box">
+                    <h3><i class="fas fa-star"></i> Skor</h3>
+                    <p id="score">0</p>
+                </div>
+                <div class="info-box">
+                    <h3><i class="fas fa-tachometer-alt"></i> Kesulitan</h3>
+                    <p id="difficulty">Sulit</p>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div id="quiz-content">
+                <div class="question-container">
+                    <div class="question-header">
+                        <div class="question-number">Soal #<span id="question-index">1</span></div>
+                        <div class="question-difficulty">Tingkat Sulit</div>
+                    </div>
+                    
+                    <h2 id="question-text">Memuat pertanyaan...</h2>
+                    
+                    <div class="options-container" id="options-container">
+                        <!-- Opsi jawaban akan dimuat di sini -->
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn" id="submit-btn" disabled>
+                        <i class="far fa-paper-plane"></i> Jawab
+                    </button>
+                    <button class="btn" id="next-btn" disabled>
+                        <i class="fas fa-forward"></i> Lanjutkan
+                    </button>
+                    <button class="btn" id="result-btn" disabled>
+                        <i class="far fa-chart-bar"></i> Hasil
+                    </button>
+                </div>
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <div class="result-header">
+                    <h2 class="result-title">Hasil Kuis Informatika</h2>
+                    <p class="subtitle">Anda telah menyelesaikan kuis!</p>
+                </div>
+                
+                <div class="score-display" id="final-score">0/100</div>
+                <p class="score-text" id="score-message">Memuat hasil...</p>
+                
+                <div class="result-details">
+                    <div class="result-box">
+                        <h3>Jawaban Benar</h3>
+                        <p id="correct-answers">0</p>
+                    </div>
+                    <div class="result-box">
+                        <h3>Waktu Tersisa</h3>
+                        <p id="time-left">0</p>
+                    </div>
+                    <div class="result-box">
+                        <h3>Persentase</h3>
+                        <p id="percentage">0%</p>
+                    </div>
+                </div>
+                
+                <button class="btn restart-btn" id="restart-btn">
+                    <i class="fas fa-redo"></i> Mulai Kuis Lagi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data soal kuis informatika tingkat sulit
+        const questions = [
+            {
+                question: "Dalam teori kompleksitas komputasi, masalah keputusan apa yang terbukti sebagai masalah pertama yang NP-lengkap?",
+                options: [
+                    "Problem satisfiability Boolean (SAT)",
+                    "Problem traveling salesman",
+                    "Problem knapsack",
+                    "Problem graph coloring"
+                ],
+                correct: 0,
+                explanation: "Problem Satisfiability Boolean (SAT) adalah masalah pertama yang terbukti sebagai NP-lengkap oleh Stephen Cook dalam teorema Cook-Levin pada tahun 1971."
+            },
+            {
+                question: "Apa yang dimaksud dengan 'side-channel attack' dalam kriptografi dan bagaimana cara kerjanya?",
+                options: [
+                    "Serangan yang mengeksploitasi informasi fisik dari implementasi sistem kripto",
+                    "Serangan yang menggunakan algoritma kuantum untuk memecahkan kriptografi",
+                    "Serangan yang memanfaatkan kelemahan matematis dalam algoritma kriptografi",
+                    "Serangan yang menggunakan teknik brute force pada kunci enkripsi"
+                ],
+                correct: 0,
+                explanation: "Side-channel attack mengeksploitasi informasi fisik seperti waktu eksekusi, konsumsi daya, emisi elektromagnetik, atau bahkan suara dari perangkat kriptografi untuk mengekstrak informasi rahasia."
+            },
+            {
+                question: "Dalam arsitektur komputer, apa perbedaan utama antara paradigma SIMD dan MIMD dalam klasifikasi Flynn?",
+                options: [
+                    "SIMD: satu instruksi banyak data, MIMD: banyak instruksi banyak data",
+                    "SIMD: banyak instruksi satu data, MIMD: banyak instruksi banyak data",
+                    "SIMD: satu instruksi satu data, MIMD: banyak instruksi satu data",
+                    "SIMD: satu instruksi banyak data, MIMD: satu instruksi satu data"
+                ],
+                correct: 0,
+                explanation: "SIMD (Single Instruction, Multiple Data) mengeksekusi satu instruksi pada banyak data secara paralel, sedangkan MIMD (Multiple Instruction, Multiple Data) mengeksekusi banyak instruksi pada banyak data secara paralel."
+            },
+            {
+                question: "Apa yang dimaksud dengan 'zero-knowledge proof' dalam kriptografi dan apa aplikasi praktisnya?",
+                options: [
+                    "Metode untuk membuktikan pengetahuan suatu rahasia tanpa mengungkapkan rahasia itu sendiri",
+                    "Teknik untuk mengenkripsi data tanpa menggunakan kunci",
+                    "Protokol untuk mengamankan transmisi data dengan otentikasi nol",
+                    "Algoritma untuk kompresi data tanpa kehilangan informasi"
+                ],
+                correct: 0,
+                explanation: "Zero-knowledge proof memungkinkan seseorang (prover) membuktikan kepada orang lain (verifier) bahwa mereka mengetahui suatu nilai, tanpa mengungkapkan informasi apa pun tentang nilai tersebut. Aplikasinya termasuk dalam protokol keamanan seperti Zcash dan authentication systems."
+            },
+            {
+                question: "Apa perbedaan mendasar antara deep learning dan machine learning tradisional?",
+                options: [
+                    "Deep learning menggunakan jaringan saraf dengan banyak lapisan tersembunyi",
+                    "Deep learning tidak memerlukan data training",
+                    "Machine learning tradisional hanya bekerja dengan data terstruktur",
+                    "Tidak ada perbedaan, keduanya adalah istilah yang sama"
+                ],
+                correct: 0,
+                explanation: "Perbedaan utama adalah deep learning menggunakan jaringan saraf dalam (neural networks) dengan banyak lapisan tersembunyi (hidden layers) yang dapat mempelajari representasi hierarkis dari data secara otomatis, sedangkan machine learning tradisional sering memerlukan ekstraksi fitur manual."
+            },
+            {
+                question: "Dalam teori database, apa yang dimaksud dengan 'ACID properties' dan mengapa penting?",
+                options: [
+                    "Atomicity, Consistency, Isolation, Durability - menjamin keandalan transaksi database",
+                    "Availability, Consistency, Integrity, Durability - menjamin kinerja database",
+                    "Atomicity, Concurrency, Isolation, Durability - mengoptimalkan query database",
+                    "Accuracy, Consistency, Integrity, Durability - memvalidasi data dalam database"
+                ],
+                correct: 0,
+                explanation: "ACID properties (Atomicity, Consistency, Isolation, Durability) adalah sekumpulan properti yang menjamin keandalan transaksi database. Ini penting untuk memastikan validitas data bahkan dalam kasus error, kegagalan daya, atau akses bersamaan."
+            },
+            {
+                question: "Apa itu 'quantum supremacy' dan eksperimen apa yang pertama kali mendemonstrasikannya?",
+                options: [
+                    "Kemampuan komputer kuantum menyelesaikan masalah yang tak terpecahkan komputer klasik, didemonstrasikan Google dengan Sycamore",
+                    "Kemampuan komputer kuantum mengalahkan superkomputer dalam semua tugas, didemonstrasikan IBM",
+                    "Kemampuan komputer klasik meniru komputer kuantum, didemonstrasikan Intel",
+                    "Kemampuan komputer kuantum menyelesaikan masalah praktis bisnis, didemonstrasikan D-Wave"
+                ],
+                correct: 0,
+                explanation: "Quantum supremacy merujuk pada kemampuan komputer kuantum menyelesaikan masalah yang secara praktis tak terpecahkan oleh komputer klasik. Google mendemonstrasikannya pertama kali pada 2019 dengan prosesor Sycamore yang menyelesaikan tugas khusus dalam 200 detik yang akan memakan waktu 10.000 tahun untuk superkomputer klasik."
+            },
+            {
+                question: "Dalam komputasi awan, apa perbedaan antara 'containerization' dan 'virtualization'?",
+                options: [
+                    "Container berbagi OS host, sedangkan VM memiliki OS lengkap sendiri",
+                    "Container lebih aman daripada VM karena isolasi lengkap",
+                    "VM lebih ringan dan cepat dibanding container",
+                    "Tidak ada perbedaan signifikan, keduanya teknologi yang sama"
+                ],
+                correct: 0,
+                explanation: "Containerization membungkus aplikasi dengan dependensinya, berbagi kernel OS host, sehingga lebih ringan. Virtualization menciptakan mesin virtual lengkap dengan OS sendiri, memberikan isolasi lebih kuat tetapi dengan overhead lebih besar."
+            },
+            {
+                question: "Apa yang dimaksud dengan 'byzantine fault tolerance' dalam sistem terdistribusi?",
+                options: [
+                    "Kemampuan sistem mencapai konsensus meskipun ada komponen yang gagal atau berperilaku jahat",
+                    "Teknik untuk memperbaiki kesalahan hardware dalam prosesor",
+                    "Metode untuk mentolerir kegagalan jaringan dengan routing alternatif",
+                    "Protokol untuk mencegah serangan DDoS pada sistem terdistribusi"
+                ],
+                correct: 0,
+                explanation: "Byzantine fault tolerance adalah kemampuan sistem terdistribusi untuk mencapai konsensus (kesepakatan) bahkan ketika beberapa komponennya gagal atau berperilaku tidak terduga (byzantine failure). Konsep ini penting untuk blockchain dan sistem kritis lainnya."
+            },
+            {
+                question: "Apa itu 'homomorphic encryption' dan mengapa dianggap sebagai terobosan dalam kriptografi?",
+                options: [
+                    "Enkripsi yang memungkinkan komputasi pada data terenkripsi tanpa dekripsi",
+                    "Enkripsi yang mengubah bentuk data menjadi homografis",
+                    "Enkripsi yang menggunakan fungsi matematika homogen",
+                    "Enkripsi yang hanya dapat dipecahkan oleh komputer kuantum"
+                ],
+                correct: 0,
+                explanation: "Homomorphic encryption adalah bentuk enkripsi yang memungkinkan komputasi dilakukan pada ciphertext, menghasilkan hasil terenkripsi yang, ketika didekripsi, sesuai dengan hasil operasi pada plaintext. Ini memungkinkan pemrosesan data yang aman di cloud tanpa mengungkapkan data asli."
+            }
+        ];
+
+        // Variabel state kuis
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let timer;
+        let selectedOption = null;
+        let quizCompleted = false;
+        let correctAnswersCount = 0;
+
+        // Elemen DOM
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionElement = document.getElementById('current-question');
+        const questionIndexElement = document.getElementById('question-index');
+        const timerElement = document.getElementById('timer');
+        const scoreElement = document.getElementById('score');
+        const submitBtn = document.getElementById('submit-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const resultBtn = document.getElementById('result-btn');
+        const quizContent = document.getElementById('quiz-content');
+        const resultContainer = document.getElementById('result-container');
+        const finalScoreElement = document.getElementById('final-score');
+        const correctAnswersElement = document.getElementById('correct-answers');
+        const timeLeftElement = document.getElementById('time-left');
+        const percentageElement = document.getElementById('percentage');
+        const scoreMessageElement = document.getElementById('score-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressBar = document.getElementById('progress-bar');
+
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timeLeft = 60;
+            timerElement.textContent = timeLeft;
+            
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!quizCompleted) {
+                        submitAnswer();
+                    }
+                }
+                
+                // Efek visual saat waktu hampir habis
+                if (timeLeft <= 10) {
+                    timerElement.style.color = '#e74c3c';
+                    timerElement.style.transform = 'scale(1.1)';
+                } else {
+                    timerElement.style.color = '#3498db';
+                    timerElement.style.transform = 'scale(1)';
+                }
+            }, 1000);
+        }
+
+        // Fungsi untuk memuat pertanyaan
+        function loadQuestion() {
+            // Reset state
+            selectedOption = null;
+            submitBtn.disabled = true;
+            nextBtn.disabled = true;
+            
+            // Update tampilan soal
+            const currentQuestion = questions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            questionIndexElement.textContent = currentQuestionIndex + 1;
+            currentQuestionElement.textContent = `${currentQuestionIndex + 1}/10`;
+            
+            // Update progress bar
+            progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+            
+            // Hapus opsi sebelumnya
+            optionsContainer.innerHTML = '';
+            
+            // Buat opsi baru
+            const optionLetters = ['A', 'B', 'C', 'D'];
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.innerHTML = `
+                    <div class="option-letter">${optionLetters[index]}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                optionElement.addEventListener('click', () => selectOption(index, optionElement));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Mulai timer baru
+            startTimer();
+        }
+
+        // Fungsi untuk memilih opsi
+        function selectOption(optionIndex, optionElement) {
+            // Hapus seleksi sebelumnya
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Tandai opsi yang dipilih
+            optionElement.classList.add('selected');
+            selectedOption = optionIndex;
+            submitBtn.disabled = false;
+            
+            // Efek glitch pada tombol
+            submitBtn.classList.add('glitch-effect');
+            setTimeout(() => {
+                submitBtn.classList.remove('glitch-effect');
+            }, 300);
+        }
+
+        // Fungsi untuk mengirim jawaban
+        function submitAnswer() {
+            if (selectedOption === null) return;
+            
+            clearInterval(timer);
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const allOptions = document.querySelectorAll('.option');
+            
+            // Tandai jawaban yang benar dan salah
+            allOptions.forEach((option, index) => {
+                option.classList.remove('selected');
+                
+                if (index === currentQuestion.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedOption && index !== currentQuestion.correct) {
+                    option.classList.add('wrong');
+                }
+                
+                // Nonaktifkan klik setelah jawaban dikirim
+                option.style.pointerEvents = 'none';
+            });
+            
+            // Periksa jawaban
+            const isCorrect = selectedOption === currentQuestion.correct;
+            
+            if (isCorrect) {
+                // Hitung skor berdasarkan waktu tersisa
+                const timeBonus = Math.floor(timeLeft / 2);
+                score += 10 + timeBonus;
+                correctAnswersCount++;
+                
+                // Update skor dengan animasi
+                animateScoreUpdate(score - (10 + timeBonus), score);
+                
+                // Efek visual untuk jawaban benar
+                document.querySelector('.question-container').style.boxShadow = '0 8px 25px rgba(46, 204, 113, 0.3)';
+                setTimeout(() => {
+                    document.querySelector('.question-container').style.boxShadow = '0 8px 25px var(--shadow-color)';
+                }, 1000);
+            } else {
+                // Efek visual untuk jawaban salah
+                document.querySelector('.question-container').style.boxShadow = '0 8px 25px rgba(231, 76, 60, 0.3)';
+                setTimeout(() => {
+                    document.querySelector('.question-container').style.boxShadow = '0 8px 25px var(--shadow-color)';
+                }, 1000);
+            }
+            
+            // Update tombol
+            submitBtn.disabled = true;
+            nextBtn.disabled = false;
+            
+            // Jika ini soal terakhir, aktifkan tombol hasil
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.disabled = true;
+                resultBtn.disabled = false;
+                quizCompleted = true;
+            }
+            
+            // Update skor di tampilan
+            scoreElement.textContent = score;
+        }
+
+        // Fungsi untuk animasi perubahan skor
+        function animateScoreUpdate(start, end) {
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const timer = setInterval(() => {
+                current += increment;
+                scoreElement.textContent = current;
+                
+                // Efek visual saat skor bertambah
+                scoreElement.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    scoreElement.style.transform = 'scale(1)';
+                }, 100);
+                
+                if (current === end) {
+                    clearInterval(timer);
+                }
+            }, 50);
+        }
+
+        // Fungsi untuk pindah ke soal berikutnya
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+            
+            // Reset tombol
+            nextBtn.disabled = true;
+            resultBtn.disabled = currentQuestionIndex !== questions.length - 1;
+        }
+
+        // Fungsi untuk menampilkan hasil
+        function showResults() {
+            // Hentikan timer
+            clearInterval(timer);
+            
+            // Hitung persentase
+            const percentage = Math.round((correctAnswersCount / questions.length) * 100);
+            
+            // Update tampilan hasil
+            finalScoreElement.textContent = `${score}/100`;
+            correctAnswersElement.textContent = `${correctAnswersCount}/${questions.length}`;
+            timeLeftElement.textContent = `${timeLeft}s`;
+            percentageElement.textContent = `${percentage}%`;
+            
+            // Tentukan pesan berdasarkan skor
+            let message = '';
+            if (percentage >= 90) {
+                message = 'Luar biasa! Anda benar-benar ahli informatika!';
+            } else if (percentage >= 70) {
+                message = 'Bagus! Pengetahuan informatika Anda sangat solid.';
+            } else if (percentage >= 50) {
+                message = 'Cukup baik. Masih ada ruang untuk peningkatan.';
+            } else {
+                message = 'Perlu belajar lebih giat lagi tentang informatika.';
+            }
+            
+            scoreMessageElement.textContent = message;
+            
+            // Tampilkan halaman hasil, sembunyikan kuis
+            quizContent.style.display = 'none';
+            resultContainer.style.display = 'block';
+            
+            // Efek visual untuk halaman hasil
+            resultContainer.style.opacity = '0';
+            resultContainer.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                resultContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                resultContainer.style.opacity = '1';
+                resultContainer.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        // Fungsi untuk memulai kuis kembali
+        function restartQuiz() {
+            // Reset state
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            quizCompleted = false;
+            
+            // Update tampilan
+            scoreElement.textContent = '0';
+            quizContent.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            // Reset tombol
+            submitBtn.disabled = true;
+            nextBtn.disabled = true;
+            resultBtn.disabled = true;
+            
+            // Muat soal pertama
+            loadQuestion();
+        }
+
+        // Event listeners
+        submitBtn.addEventListener('click', submitAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        resultBtn.addEventListener('click', showResults);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // Tambahkan efek glitch pada semua tombol saat diklik
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.disabled) {
+                    this.classList.add('glitch-effect');
+                    setTimeout(() => {
+                        this.classList.remove('glitch-effect');
+                    }, 300);
+                }
+            });
+        });
+
+        // Inisialisasi kuis
+        window.addEventListener('DOMContentLoaded', () => {
+            loadQuestion();
+            
+            // Efek masuk untuk kontainer utama
+            document.querySelector('.container').style.opacity = '0';
+            document.querySelector('.container').style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                document.querySelector('.container').style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                document.querySelector('.container').style.opacity = '1';
+                document.querySelector('.container').style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // Efek visual tambahan untuk interaksi
+        document.querySelectorAll('.info-box, .option, .btn').forEach(element => {
+            element.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            element.addEventListener('mouseup', function() {
+                this.style.transform = '';
+            });
+            
+            element.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
